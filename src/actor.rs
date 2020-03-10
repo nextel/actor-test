@@ -1,81 +1,57 @@
-use actix::{Actor, Context, Message, Handler};
+use actix::{Actor, Context, Message, Handler, Addr};
 use actix::dev::{ResponseChannel, MessageResponse};
+use crate::actor_counter_state::{CounterStateActor,SetCounter};
 
 pub struct CounterActor{
-    pub counter :usize
+    pub counter_state_actor:Addr<CounterStateActor>
 }
 
 impl Actor for CounterActor{
     type Context = Context<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        ctx.set_mailbox_capacity(1)
+        println!("started counter actor");
     }
+
+    fn stopped(&mut self, ctx: &mut Self::Context) {
+        println!("stopped");
+    }
+
+
 }
 
 
-impl Handler<SetCounter> for CounterActor{
+impl Handler<StartIncCounter> for CounterActor{
     type Result = ();
 
-    fn handle(&mut self, msg: SetCounter, ctx: &mut Self::Context) -> Self::Result {
-        println!("setCounter {:?}",msg.counter.clone());
-        self.counter = msg.counter
-    }
-}
+    fn handle(&mut self, msg: StartIncCounter, ctx: &mut Self::Context) -> Self::Result {
 
-
-impl Handler<GetCounter> for CounterActor{
-    type Result = GetCounterResp;
-
-    fn handle(&mut self, msg: GetCounter, ctx: &mut Self::Context) -> Self::Result {
-        println!("get counter {:?}",self.counter.clone());
-
-        GetCounterResp{
-            counter: self.counter.clone()
+        let mut counter =0 ;
+        loop{
+            self.counter_state_actor.do_send(SetCounter{
+                counter
+            });
+            counter = counter+1;
+            println!("counter {:?}",counter);
+            if counter == 99999{
+                break
+            }
         }
     }
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
- pub struct SetCounter{
-    pub counter :usize
-}
-
-impl Message for SetCounter{
-    type Result = ();
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
- pub struct GetCounter{
+pub struct StartIncCounter{
 
 }
-
-impl Message for GetCounter{
-    type Result = GetCounterResp;
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
- pub struct GetCounterResp{
-pub counter :usize
-}
-
-impl Message for GetCounterResp{
-    type Result = ();
+impl Message for StartIncCounter{
+        type Result = ();
 }
 
 
-impl<A, M> MessageResponse<A, M> for GetCounterResp
-    where
-        A: Actor,
-        M: Message<Result = GetCounterResp>,
-{
-    fn handle<R: ResponseChannel<M>>(self, _: &mut A::Context, tx: Option<R>) {
-        if let Some(tx) = tx {
-            tx.send(self);
-        }
-    }
-}
+
+
+
 
 
 
