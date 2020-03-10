@@ -1,5 +1,5 @@
 use actix_web::HttpServer;
-use actix::Actor;
+use actix::{Actor, SyncArbiter};
 use crate::models::AppState;
 use actix_web::{middleware, App};
 use crate::actor_counter_state::CounterStateActor;
@@ -16,13 +16,16 @@ extern crate serde_derive;
 
 #[actix_rt::main]
 async fn main() {
-    let counter_state_actor_address = CounterStateActor {
-        counter: 0
-    }.start();
 
-    let counter_actor_address = actor::CounterActor {
-        counter_state_actor: counter_state_actor_address.clone()
-    }.start();
+        CounterStateActor {
+            counter: 0
+        }.start();
+
+
+
+          actor::CounterActor {
+        }.start();
+
 
 
     HttpServer::new(move || {
@@ -30,8 +33,6 @@ async fn main() {
 
         App::new()
             .data(AppState {
-                counter_actor: counter_actor_address.clone(),
-                counter_state_actor: counter_state_actor_address.clone()
             })
             .service(handlers::get_counter)
             .service(handlers::set_counter)

@@ -1,22 +1,33 @@
-use actix::{Actor, Context, Message, Handler};
+use actix::{Actor, Context, Message, Handler, SyncContext, ArbiterService};
 use actix::dev::{ResponseChannel, MessageResponse};
 
+
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct CounterStateActor {
     pub counter :usize
 }
+
+
 
 impl Actor for CounterStateActor {
     type Context = Context<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        println!("started");
-        ctx.set_mailbox_capacity(99999)
+        println!("started counter state");
     }
 
     fn stopped(&mut self, ctx: &mut Self::Context) {
-        println!("stopped");
+        println!("stopped counter state ");
     }
 
+}
+
+impl actix::Supervised for CounterStateActor {}
+
+impl ArbiterService for CounterStateActor {
+    fn service_started(&mut self, ctx: &mut Context<Self>) {
+        println!("Service started");
+    }
 }
 
 
