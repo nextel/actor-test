@@ -43,7 +43,7 @@ impl Handler<StartIncCounter> for CounterActor{
             //     counter
             // });
             counter = counter+1;
-            // thread::sleep(std::time::Duration::from_secs(5));
+            thread::sleep(std::time::Duration::from_secs(5));
             println!("counter {:?}",counter);
             let addr = CounterStateActor::from_registry();
 

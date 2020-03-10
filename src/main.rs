@@ -3,6 +3,7 @@ use actix::{Actor, SyncArbiter};
 use crate::models::AppState;
 use actix_web::{middleware, App};
 use crate::actor_counter_state::CounterStateActor;
+use actix_rt::Arbiter;
 
 mod actor;
 mod handlers;
@@ -16,15 +17,25 @@ extern crate serde_derive;
 
 #[actix_rt::main]
 async fn main() {
+    let arbiter1 = Arbiter::new();
+    let arbiter2 = Arbiter::new();
 
+
+
+    Actor::start_in_arbiter(&arbiter1,|_|{
         CounterStateActor {
             counter: 0
-        }.start();
+        }
+    });
 
 
 
-          actor::CounterActor {
-        }.start();
+    Actor::start_in_arbiter(&arbiter2,|_|{
+            actor::CounterActor {
+            }
+        });
+
+
 
 
 
