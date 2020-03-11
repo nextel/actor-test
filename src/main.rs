@@ -21,29 +21,30 @@ async fn main() {
     let arbiter2 = Arbiter::new();
 
 
-
-    Actor::start_in_arbiter(&arbiter1,|_|{
+    let addr_state_actor = Actor::start_in_arbiter(&arbiter1, |_| {
         CounterStateActor {
             counter: 0
         }
     });
 
 
-
-    Actor::start_in_arbiter(&arbiter2,|_|{
-            actor::CounterActor {
-            }
-        });
-
-
+    let addr_counter_actor = Actor::start_in_arbiter(&arbiter2, |_| {
+        actor::CounterActor {
+            actor_state_counter_address: addr_state_actor.clone()
+        }
+    });
 
 
 
-    HttpServer::new(move || {
+
+
+    HttpServer::new( || {
 
 
         App::new()
             .data(AppState {
+                counter_actor: addr_counter_actor.clone(),
+                counter_state_actor: addr_state_actor.clone()c
             })
             .service(handlers::get_counter)
             .service(handlers::set_counter)

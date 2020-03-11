@@ -11,7 +11,7 @@ pub async fn set_counter(
     set_request: web::Json<StartIncCounter>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let addr = CounterActor::from_registry().clone();
+    let addr = data.counter_actor.clone();
     addr.try_send(StartIncCounter{}) ;
     Ok(HttpResponse::Ok()
             .content_type("application/json")
@@ -23,7 +23,7 @@ pub async fn get_counter(
     req: HttpRequest,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let addr = CounterStateActor::from_registry();
+    let addr = data.counter_state_actor.clone();
     let x = addr.send(GetCounter {}).await;
          Ok(HttpResponse::Ok()
             .content_type("application/json")

@@ -3,19 +3,20 @@ use actix::dev::{ResponseChannel, MessageResponse};
 use crate::actor_counter_state::{CounterStateActor, SetCounter, GetCounter};
 use std::thread;
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-
+#[derive(Debug)]
 pub struct CounterActor{
+    actor_state_counter_address:Addr<CounterStateActor>
 }
 
-impl actix::Supervised for CounterActor {}
-
-impl ArbiterService for CounterActor {
-    fn service_started(&mut self, ctx: &mut Context<Self>) {
-        println!("Service started");
-    }
-}
-
+//regestry comment
+// impl actix::Supervised for CounterActor {}
+//
+// impl ArbiterService for CounterActor {
+//     fn service_started(&mut self, ctx: &mut Context<Self>) {
+//         println!("Service started");
+//     }
+// }
+//
 
 impl Actor for CounterActor{
     type Context = Context<Self>;
@@ -45,7 +46,7 @@ impl Handler<StartIncCounter> for CounterActor{
             counter = counter+1;
             thread::sleep(std::time::Duration::from_secs(5));
             println!("counter {:?}",counter);
-            let addr = CounterStateActor::from_registry();
+            let addr = self.actor_state_counter_address.clone();
 
             let result = addr.try_send(SetCounter { counter: counter.clone() }).unwrap();
             if counter == 999{

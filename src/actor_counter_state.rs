@@ -22,13 +22,15 @@ impl Actor for CounterStateActor {
 
 }
 
-impl actix::Supervised for CounterStateActor {}
-
-impl ArbiterService for CounterStateActor {
-    fn service_started(&mut self, ctx: &mut Context<Self>) {
-        println!("Service started");
-    }
-}
+//regestry comment
+//
+// impl actix::Supervised for CounterStateActor {}
+//
+// impl ArbiterService for CounterStateActor {
+//     fn service_started(&mut self, ctx: &mut Context<Self>) {
+//         println!("Service started");
+//     }
+// }
 
 
 impl Handler<SetCounter> for CounterStateActor {
