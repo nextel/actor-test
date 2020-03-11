@@ -27,10 +27,12 @@ async fn main() {
         }
     });
 
+    let addr_cloned = addr_state_actor.clone();
 
-    let addr_counter_actor = Actor::start_in_arbiter(&arbiter2, |_| {
+
+    let addr_counter_actor = Actor::start_in_arbiter(&arbiter2, move|_| {
         actor::CounterActor {
-            actor_state_counter_address: addr_state_actor.clone()
+            actor_state_counter_address: addr_cloned
         }
     });
 
@@ -38,13 +40,13 @@ async fn main() {
 
 
 
-    HttpServer::new( || {
+    HttpServer::new( move || {
 
 
         App::new()
             .data(AppState {
                 counter_actor: addr_counter_actor.clone(),
-                counter_state_actor: addr_state_actor.clone()c
+                counter_state_actor: addr_state_actor.clone()
             })
             .service(handlers::get_counter)
             .service(handlers::set_counter)

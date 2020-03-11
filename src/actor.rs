@@ -5,7 +5,7 @@ use std::thread;
 
 #[derive(Debug)]
 pub struct CounterActor{
-    actor_state_counter_address:Addr<CounterStateActor>
+    pub actor_state_counter_address:Addr<CounterStateActor>
 }
 
 //regestry comment
