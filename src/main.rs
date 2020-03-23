@@ -17,8 +17,9 @@ extern crate serde_derive;
 
 #[actix_rt::main]
 async fn main() {
-    let arbiter1 = Arbiter::new();
-    let arbiter2 = Arbiter::new();
+    let arbiter_for_state_actor = Arbiter::new();
+    let arbiter_for_status_actor = Arbiter::new();
+    let arbiter_for_status_actor = Arbiter::new();
 
 
     let addr_state_actor = Actor::start_in_arbiter(&arbiter1, |_| {
